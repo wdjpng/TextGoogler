@@ -2,8 +2,6 @@ package com.wdjpng.textgoogler;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,17 +12,12 @@ import android.widget.Button;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.vision.text.Element;
-import com.google.android.gms.vision.text.Line;
-import com.google.android.gms.vision.text.TextBlock;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
-import com.google.firebase.ml.vision.text.RecognizedLanguage;
 
 import java.io.IOException;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private Button selectImageButton;
     private Button takeImageButton;
 
-    private OnFailureListener textRecogniserOnFailureListener;
-    private OnSuccessListener textRecogniserOnSuccessListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
         defineWidgets();
         defineListeners();
-
     }
 
     private void defineWidgets() {
@@ -64,51 +54,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
-
-
             }
         });
-
-        textRecogniserOnFailureListener = new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        };
-
-        textRecogniserOnSuccessListener = new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object o) {
-                FirebaseVisionText result = (FirebaseVisionText) o;
-
-                String resultText = result.getText();
-                for (FirebaseVisionText.TextBlock block: result.getTextBlocks()) {
-                    String blockText = block.getText();
-                    Float blockConfidence = block.getConfidence();
-                    List<RecognizedLanguage> blockLanguages = block.getRecognizedLanguages();
-                    Point[] blockCornerPoints = block.getCornerPoints();
-                    Rect blockFrame = block.getBoundingBox();
-                    for (FirebaseVisionText.Line line: block.getLines()) {
-                        String lineText = line.getText();
-                        Float lineConfidence = line.getConfidence();
-                        List<RecognizedLanguage> lineLanguages = line.getRecognizedLanguages();
-                        Point[] lineCornerPoints = line.getCornerPoints();
-                        Rect lineFrame = line.getBoundingBox();
-                        for (FirebaseVisionText.Element element: line.getElements()) {
-                            String elementText = element.getText();
-                            Float elementConfidence = element.getConfidence();
-                            List<RecognizedLanguage> elementLanguages = element.getRecognizedLanguages();
-                            Point[] elementCornerPoints = element.getCornerPoints();
-                            Rect elementFrame = element.getBoundingBox();
-                        }
-                    }
-                }
-
-                System.out.println(resultText);
-            }
-        };
-
-
     }
 
     @Override
@@ -132,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(imageBitmap != null){
-                recogniseText(imageBitmap);
+                recogniseAndGoogleText(imageBitmap);
             }
         }
 
@@ -140,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void googleText(String query) {
+        String url = "http://www.google.com/#q=";
+        String final_url = url + query;
+
+        Uri uri = Uri.parse(final_url);
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
     private void dispatchTakePictureIntent() {
@@ -163,16 +118,27 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(chooserIntent, REQUEST_IMAGE_PICK);
     }
 
-    private void recogniseText(Bitmap imageBitmap){
+    private void recogniseAndGoogleText(Bitmap imageBitmap){
+
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(imageBitmap);
 
         FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance()
                 .getOnDeviceTextRecognizer();
 
-        textRecognizer.processImage(image)
-                .addOnSuccessListener(textRecogniserOnSuccessListener).
-                addOnFailureListener(textRecogniserOnFailureListener);
 
+        textRecognizer.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                    @Override
+                    public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                        googleText(firebaseVisionText.getText());
+                    }
+                }).
+                addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }
 
