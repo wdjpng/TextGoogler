@@ -4,30 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    tools:layout_editor_absoluteY="25dp">
 
     <Button
         android:id="@+id/selectImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="117dp"
-        android:text="@string/buttontext_select_from_galary"
+        android:layout_width="172dp"
+        android:layout_height="0dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="73dp"
+        android:layout_marginBottom="34dp"
+        android:background="@color/blank"
         app:layout_constraintBottom_toTopOf="@+id/takeImageButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:drawableTop="@drawable/gallery_symbol_120x120"
+        android:contentDescription="@string/buttontext_take_with_camera"/>
 
     <Button
         android:id="@+id/takeImageButton"
-        android:layout_width="202dp"
+        android:layout_width="170dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="266dp"
-        android:text="@string/buttontext_take_with_camera"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="256dp"
+        android:background="@color/blank"
+        android:contentDescription="@string/buttontext_select_from_gallery"
+        android:drawableTop="@drawable/camera_symbol_120x120"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectImageButton"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintTop_toBottomOf="@+id/selectImageButton" />
 </android.support.constraint.ConstraintLayout>
