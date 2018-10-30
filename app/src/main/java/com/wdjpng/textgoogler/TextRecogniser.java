@@ -8,14 +8,14 @@ import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
 public class TextRecogniser {
     private MainActivity mainActivity;
-    private  ClickListener clickListener;
+    private Listeners listeners;
 
-    public TextRecogniser(MainActivity mainActivity){
+    protected TextRecogniser(MainActivity mainActivity){
         this.mainActivity = mainActivity;
-        this.clickListener = mainActivity.getClickListener();
+        this.listeners = mainActivity.getListeners();
     }
 
-    public void recogniseAndGoogleText(final Bitmap imageBitmap) {
+    protected void recogniseText(final Bitmap imageBitmap) {
 
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(imageBitmap);
 
@@ -25,7 +25,7 @@ public class TextRecogniser {
 
 
         textRecognizer.processImage(image)
-                .addOnSuccessListener(clickListener.getFirebaseVisionTextOnSuccessListener())
-                .addOnFailureListener(clickListener.getFirebaseVisionTextOnFailureListener());
+                .addOnSuccessListener(listeners.getFirebaseVisionTextOnSuccessListener())
+                .addOnFailureListener(listeners.getFirebaseVisionTextOnFailureListener());
     }
 }
